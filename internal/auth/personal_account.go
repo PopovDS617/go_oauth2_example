@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"golangoauth2example/internal/model"
 	"html/template"
 	"log"
 	"net/http"
@@ -8,7 +9,16 @@ import (
 
 func HandleGetPersonalAccount(w http.ResponseWriter, r *http.Request) {
 
-	w.WriteHeader(200)
+	ctx := r.Context()
+
+	user := ctx.Value("user")
+
+	user, ok := user.(model.User)
+
+	if !ok {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 
 	t := template.New("account.html")
 
@@ -20,10 +30,8 @@ func HandleGetPersonalAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := struct{ Name string }{"Hello"}
+	if err := t.Execute(w, user); err != nil {
 
-	if err := t.Execute(w, res); err != nil {
-		log.Println()
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
