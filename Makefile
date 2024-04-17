@@ -1,5 +1,4 @@
 BINARY_NAME=app
-HTTP_PORT="8000"
 LOCAL_BIN:=$(CURDIR)/bin
 include .env
 
