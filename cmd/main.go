@@ -1,12 +1,16 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"golangoauth2example/internal/app"
+	"log"
 )
 
 func main() {
-	v := os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET")
 
-	fmt.Println(v)
+	app := app.NewApp()
+
+	if err := app.Start(); err != nil {
+		log.Fatal(err)
+	}
+
 }
