@@ -14,7 +14,7 @@ type App struct {
 func (a *App) initRouter() http.Handler {
 	if a.router == nil {
 
-		mw := middleware.CreateMiddlewareStack(middleware.Logging)
+		basicMiddleware := middleware.CreateMiddlewareStack(middleware.Logging, middleware.CORS)
 
 		mux := http.NewServeMux()
 
@@ -22,8 +22,13 @@ func (a *App) initRouter() http.Handler {
 
 		// file routers
 		htmlRouter := server.NewHTMLRouter()
+		htmlRouter.Handler = middleware.Caching(htmlRouter.Handler)
+
 		cssRouter := server.NewCSSRouter()
+		cssRouter.Handler = middleware.Caching(cssRouter.Handler)
+
 		imagesRouter := server.NewImagesRouter()
+		imagesRouter.Handler = middleware.Caching(imagesRouter.Handler)
 
 		// oauth routers
 		googleOAUTHRouter := server.NewGoogleOAUTHRouter()
@@ -35,7 +40,7 @@ func (a *App) initRouter() http.Handler {
 		routersList = append(routersList, htmlRouter, cssRouter, imagesRouter, googleOAUTHRouter, accountRouter)
 
 		for _, v := range routersList {
-			mux.Handle(v.Pattern+"/", mw(http.StripPrefix(v.Pattern, v.Handler)))
+			mux.Handle(v.Pattern+"/", basicMiddleware(http.StripPrefix(v.Pattern, v.Handler)))
 
 		}
 

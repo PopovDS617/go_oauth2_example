@@ -144,11 +144,16 @@ body {
   overflow: hidden;
 }
 
-a {
+a,
+a:visited,
+a:hover,
+a:focus,
+a:visited {
   text-decoration: none;
+  color: #000;
 }
 
-.info-content {
+.account-content {
   padding: 20px;
   @media screen and (min-width: 768px) {
     padding: 50px;
@@ -157,7 +162,7 @@ a {
   flex-direction: column;
 }
 
-.info-heading {
+.account-heading {
   font-size: 30px;
   display: flex;
   align-items: center;
@@ -165,7 +170,7 @@ a {
   font-weight: 600;
 }
 
-.info-field_list {
+.account-field_list {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -173,16 +178,71 @@ a {
   padding: 0;
 }
 
-.info-field_key {
+.account-field_key {
   font-size: 22px;
   font-weight: 600;
 }
 
-.info-field_value {
+.account-field_value {
   font-size: 20px;
 }
 
-.info-pic {
+.account-pic {
   width: 50px;
   height: 50px;
+}
+
+.index-container {
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.index-content {
+  transition: all 250ms;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.index-content .index-google_logo {
+  transition: all 250ms;
+  opacity: 0.5;
+}
+.index-content:hover .index-google_logo {
+  transition: all 250ms;
+  opacity: 1;
+}
+.index-content .index-heading {
+  transition: all 250ms;
+  opacity: 0.5;
+}
+.index-content:hover .index-heading {
+  transition: all 250ms;
+  opacity: 1;
+  transform: translateY(8px);
+}
+
+.index-heading {
+  font-weight: 600;
+  font-size: 30px;
+  text-align: center;
+}
+
+.index-google_logo {
+  height: 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.return_link {
+  margin-bottom: 40px;
+  transition: all 250ms ease-in-out;
+}
+
+.return_link:hover {
+  transition: all 250ms ease-in-out;
+  transform: translateX(15px);
 }

@@ -16,8 +16,7 @@ import (
 	"golang.org/x/oauth2/google"
 )
 
-// Scopes: OAuth 2.0 scopes provide a way to limit the amount of access that is granted to an access token.
-var googleOauthConfig = &oauth2.Config{
+var googleOAUTHConfig = &oauth2.Config{
 	RedirectURL:  "http://localhost:8000/auth/google/callback/",
 	ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
 	ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
@@ -29,19 +28,17 @@ const oauthGoogleUrlAPI = "https://www.googleapis.com/oauth2/v2/userinfo?access_
 
 func OAUTHGoogleLogin(w http.ResponseWriter, r *http.Request) {
 
-	// Create oauthState cookie
+	// Создать куку
 	oauthState := generateStateOauthCookie(w)
 
-	/*
-		AuthCodeURL receive state that is a token to protect the user from CSRF attacks. You must always provide a non-empty string and
-		validate that it matches the the state query parameter on your redirect callback.
-	*/
-	u := googleOauthConfig.AuthCodeURL(oauthState)
+	// AuthCodeURL получает состояние, которое является токеном для защиты от CSRF.
+	// Должна быть указана непустая строка и должен соответствовать параметру запроса состояния в обратном вызове
+	u := googleOAUTHConfig.AuthCodeURL(oauthState)
 	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
 }
 
 func OAUTHGoogleCallback(w http.ResponseWriter, r *http.Request) {
-	// Read oauthState from Cookie
+	// Прочитать стейт из куки
 	oauthState, err := r.Cookie("oauthstate")
 
 	if err != nil {
@@ -63,10 +60,8 @@ func OAUTHGoogleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// GetOrCreate User in your db.
-	// Redirect or response with a token.
-	// More code .....
-
+	// Сохранить полученного пользователя в куке в виде jwt токена, чтобы потом прочитать его на другой странице.
+	// Обычно пользователь должен быть сохранен в db и получен уже оттуда
 	token, err := CreateJWTTokenFromUserData(user)
 
 	if err != nil {
@@ -94,7 +89,7 @@ func generateStateOauthCookie(w http.ResponseWriter) string {
 func getUserDataFromGoogle(code string) (model.User, error) {
 	user := model.User{}
 
-	token, err := googleOauthConfig.Exchange(context.Background(), code)
+	token, err := googleOAUTHConfig.Exchange(context.Background(), code)
 	if err != nil {
 		return user, fmt.Errorf("code exchange wrong: %s", err.Error())
 	}

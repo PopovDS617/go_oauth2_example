@@ -64,10 +64,10 @@ func NewGoogleOAUTHRouter() Router {
 	mux := http.NewServeMux()
 
 	patternLogin := "/login"
-	patternCallback := "/callback"
+	patternCallback := "/callback/"
 
 	mux.HandleFunc(patternLogin+"/", auth.OAUTHGoogleLogin)
-	mux.HandleFunc(patternCallback+"/", auth.OAUTHGoogleCallback)
+	mux.HandleFunc(patternCallback, auth.OAUTHGoogleCallback)
 
 	return Router{
 		Handler: mux,
