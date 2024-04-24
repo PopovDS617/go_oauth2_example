@@ -4,8 +4,9 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
-	"io"
+	"golangoauth2example/internal/model"
 	"log"
 	"net/http"
 	"os"
@@ -17,10 +18,10 @@ import (
 
 // Scopes: OAuth 2.0 scopes provide a way to limit the amount of access that is granted to an access token.
 var googleOauthConfig = &oauth2.Config{
-	RedirectURL:  "http://localhost:8000/auth/google/callback",
+	RedirectURL:  "http://localhost:8000/auth/google/callback/",
 	ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
 	ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
-	Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
+	Scopes:       []string{"https://www.googleapis.com/auth/userinfo.profile"},
 	Endpoint:     google.Endpoint,
 }
 
@@ -55,7 +56,7 @@ func OAUTHGoogleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := getUserDataFromGoogle(r.FormValue("code"))
+	user, err := getUserDataFromGoogle(r.FormValue("code"))
 	if err != nil {
 		log.Println(err.Error())
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
@@ -66,10 +67,14 @@ func OAUTHGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	// Redirect or response with a token.
 	// More code .....
 
-	cookie := http.Cookie{Name: "gotestsession", Value: "true", Expires: time.Now().Add(20 * time.Minute), HttpOnly: true, Path: "/"}
-	http.SetCookie(w, &cookie)
+	token, err := CreateJWTTokenFromUserData(user)
 
-	fmt.Println(data)
+	if err != nil {
+		log.Println(err)
+	}
+
+	cookie := http.Cookie{Name: "gotestsession", Value: token, Expires: time.Now().Add(20 * time.Minute), HttpOnly: true, Path: "/"}
+	http.SetCookie(w, &cookie)
 
 	http.Redirect(w, r, "/account/", http.StatusTemporaryRedirect)
 }
@@ -86,21 +91,23 @@ func generateStateOauthCookie(w http.ResponseWriter) string {
 	return state
 }
 
-func getUserDataFromGoogle(code string) ([]byte, error) {
-	// Use code to get token and get user info from Google.
+func getUserDataFromGoogle(code string) (model.User, error) {
+	user := model.User{}
 
 	token, err := googleOauthConfig.Exchange(context.Background(), code)
 	if err != nil {
-		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
+		return user, fmt.Errorf("code exchange wrong: %s", err.Error())
 	}
 	response, err := http.Get(oauthGoogleUrlAPI + token.AccessToken)
 	if err != nil {
-		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
+		return user, fmt.Errorf("failed getting user info: %s", err.Error())
 	}
 	defer response.Body.Close()
-	contents, err := io.ReadAll(response.Body)
+
+	err = json.NewDecoder(response.Body).Decode(&user)
+
 	if err != nil {
-		return nil, fmt.Errorf("failed read response: %s", err.Error())
+		return user, fmt.Errorf("failed read response: %s", err.Error())
 	}
-	return contents, nil
+	return user, nil
 }

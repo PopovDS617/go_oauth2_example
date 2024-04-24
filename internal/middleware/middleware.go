@@ -1,7 +1,8 @@
 package middleware
 
 import (
-	"fmt"
+	"context"
+	"golangoauth2example/internal/auth"
 	"golangoauth2example/internal/utils"
 	"log"
 	"net/http"
@@ -25,18 +26,23 @@ func Auth(next http.Handler) http.Handler {
 
 		authCookie, err := r.Cookie("gotestsession")
 
-		fmt.Println(r.URL)
-
 		if err != nil {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
 		cookieValue := authCookie.Value
 
-		if cookieValue != "true" {
+		user, err := auth.ParseJWTToken(cookieValue)
+
+		if err != nil {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
+		ctx := context.Background()
+
+		ctx = context.WithValue(ctx, "user", *user)
+
+		r = r.WithContext(ctx)
 
 		next.ServeHTTP(w, r)
 	})

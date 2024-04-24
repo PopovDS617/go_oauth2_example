@@ -1,7 +1,6 @@
 package app
 
 import (
-	"golangoauth2example/internal/auth"
 	"golangoauth2example/internal/middleware"
 	"golangoauth2example/internal/server"
 	"net/http"
@@ -14,26 +13,31 @@ type App struct {
 
 func (a *App) initRouter() http.Handler {
 	if a.router == nil {
-		middleware := middleware.CreateMiddlewareStack(middleware.Logging, middleware.Auth)
+
+		mw := middleware.CreateMiddlewareStack(middleware.Logging)
 
 		mux := http.NewServeMux()
 
 		routersList := make([]server.Router, 0)
 
-		htmlRouters := server.NewHTMLRouter()
-		cssRouters := server.NewCSSRouter()
-		imagesRouters := server.NewImagesRouter()
+		// file routers
+		htmlRouter := server.NewHTMLRouter()
+		cssRouter := server.NewCSSRouter()
+		imagesRouter := server.NewImagesRouter()
 
-		routersList = append(routersList, htmlRouters...)
-		routersList = append(routersList, cssRouters...)
-		routersList = append(routersList, imagesRouters...)
+		// oauth routers
+		googleOAUTHRouter := server.NewGoogleOAUTHRouter()
+
+		// personal account routers
+		accountRouter := server.NewAccountRouter()
+		accountRouter.Handler = middleware.Auth(accountRouter.Handler)
+
+		routersList = append(routersList, htmlRouter, cssRouter, imagesRouter, googleOAUTHRouter, accountRouter)
 
 		for _, v := range routersList {
-			mux.Handle(v.Pattern+"/", http.StripPrefix(v.Pattern, v.Handler))
+			mux.Handle(v.Pattern+"/", mw(http.StripPrefix(v.Pattern, v.Handler)))
+
 		}
-		mux.HandleFunc("/auth/google/login/", auth.OAUTHGoogleLogin)
-		mux.HandleFunc("/auth/google/callback/", auth.OAUTHGoogleCallback)
-		mux.Handle("/account/", middleware(server.NewAccountRouter().Handler))
 
 		a.router = mux
 	}

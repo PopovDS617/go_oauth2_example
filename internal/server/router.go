@@ -24,63 +24,55 @@ func NewRouterFromParams(routers []Router) []Router {
 	return result
 }
 
-func NewHTMLRouter() []Router {
+func NewHTMLRouter() Router {
 	mux := http.NewServeMux()
 
 	mux.Handle("/", http.FileServer(http.Dir("templates/")))
 
-	routers := []Router{{
+	return Router{
 		Handler: mux,
 		Pattern: "",
-	}}
+	}
 
-	return routers
 }
 
-func NewCSSRouter() []Router {
+func NewCSSRouter() Router {
 	mux := http.NewServeMux()
 
 	mux.Handle("/", http.FileServer(http.Dir("assets/css/")))
 
-	routers := []Router{{
+	return Router{
 		Handler: mux,
 		Pattern: "/css",
-	},
 	}
 
-	return routers
 }
 
-func NewImagesRouter() []Router {
+func NewImagesRouter() Router {
 	mux := http.NewServeMux()
 
 	mux.Handle("/", http.FileServer(http.Dir("assets/images/")))
 
-	routers := []Router{{
+	return Router{
 		Handler: mux,
 		Pattern: "/images",
-	}}
+	}
 
-	return routers
 }
 
-func NewGoogleOAUTHRouter() []Router {
+func NewGoogleOAUTHRouter() Router {
 	mux := http.NewServeMux()
 
-	patternLogin := "/auth/google/login"
-	patternCallback := "/auth/google/callback"
+	patternLogin := "/login"
+	patternCallback := "/callback"
 
 	mux.HandleFunc(patternLogin+"/", auth.OAUTHGoogleLogin)
 	mux.HandleFunc(patternCallback+"/", auth.OAUTHGoogleCallback)
 
-	routers := []Router{{
+	return Router{
 		Handler: mux,
-		Pattern: patternLogin,
-	},
-		{Handler: mux, Pattern: patternCallback},
+		Pattern: "/auth/google",
 	}
-
-	return routers
 
 }
 
@@ -89,7 +81,7 @@ func NewAccountRouter() Router {
 
 	pattern := "/account"
 
-	mux.HandleFunc(pattern+"/", auth.HandleGetPersonalAccount)
+	mux.HandleFunc("/", auth.HandleGetPersonalAccount)
 
 	return Router{
 		Pattern: pattern,
