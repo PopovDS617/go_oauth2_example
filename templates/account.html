@@ -11,7 +11,22 @@
 
   <body>
     <main>
-      <div>Hello {{.Name}}</div>
+      <a href="/">return</a>
+      <div class="info-content">
+        <h1 class="info-heading">
+          Hello <span><img class="info-pic" src="{{.Picture}}" /></span>
+        </h1>
+        <ul class="info-field_list">
+          <li>
+            <span class="info-field_key">ID: </span>
+            <span class="info-field_value">{{.ID}}</span>
+          </li>
+          <li>
+            <span class="info-field_key">Name: </span>
+            <span class="info-field_value">{{.Name}}</span>
+          </li>
+        </ul>
+      </div>
     </main>
   </body>
 </html>
