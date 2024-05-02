@@ -211,7 +211,15 @@ a:visited {
   transition: all 250ms;
   opacity: 0.5;
 }
+.index-content .index-gopher_image_container {
+  transition: all 250ms;
+  opacity: 0.5;
+}
 .index-content:hover .index-google_logo {
+  transition: all 250ms;
+  opacity: 1;
+}
+.index-content:hover .index-gopher_image_container {
   transition: all 250ms;
   opacity: 1;
 }
@@ -237,6 +245,11 @@ a:visited {
   justify-content: center;
 }
 
+.index-gopher_image {
+  height: 100px;
+  width: 100px;
+}
+
 .return_link {
   margin-bottom: 40px;
   transition: all 250ms ease-in-out;
@@ -246,4 +259,9 @@ a:visited {
 .return_link:hover {
   transition: all 250ms ease-in-out;
   transform: translateX(15px);
+}
+
+.index-gopher_image_container {
+  display: flex;
+  justify-content: center;
 }
