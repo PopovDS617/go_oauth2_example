@@ -21,9 +21,11 @@ func CreateJWTTokenFromUserData(user model.User) (string, error) {
 	claim := userClaim{
 		RegisteredClaims: jwt.RegisteredClaims{},
 		User: model.User{
-			ID:      user.ID,
-			Name:    user.Name,
-			Picture: user.Picture,
+			ID:              user.ID,
+			Name:            user.Name,
+			Picture:         user.Picture,
+			Email:           user.Email,
+			IsEmailVerified: user.IsEmailVerified,
 		},
 	}
 
@@ -53,9 +55,11 @@ func ParseJWTToken(jwtToken string) (*model.User, error) {
 	}
 
 	result := &model.User{
-		ID:      user.User.ID,
-		Name:    user.User.Name,
-		Picture: user.User.Picture,
+		ID:              user.User.ID,
+		Name:            user.User.Name,
+		Picture:         user.User.Picture,
+		Email:           user.User.Email,
+		IsEmailVerified: user.User.IsEmailVerified,
 	}
 
 	return result, nil

@@ -20,7 +20,7 @@ var googleOAUTHConfig = &oauth2.Config{
 	RedirectURL:  "http://localhost:8000/auth/google/callback/",
 	ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
 	ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
-	Scopes:       []string{"https://www.googleapis.com/auth/userinfo.profile"},
+	Scopes:       []string{"https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"},
 	Endpoint:     google.Endpoint,
 }
 
@@ -104,5 +104,6 @@ func getUserDataFromGoogle(code string) (model.User, error) {
 	if err != nil {
 		return user, fmt.Errorf("failed read response: %s", err.Error())
 	}
+
 	return user, nil
 }

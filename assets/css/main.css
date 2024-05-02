@@ -240,6 +240,7 @@ a:visited {
 .return_link {
   margin-bottom: 40px;
   transition: all 250ms ease-in-out;
+  width: 100px;
 }
 
 .return_link:hover {
