@@ -1,13 +1,13 @@
 package app
 
 import (
+	httpServer "golangoauth2example/internal/http"
 	"golangoauth2example/internal/middleware"
-	"golangoauth2example/internal/server"
 	"net/http"
 )
 
 type App struct {
-	httpServer server.Server
+	httpServer httpServer.Server
 	router     http.Handler
 }
 
@@ -18,23 +18,23 @@ func (a *App) initRouter() http.Handler {
 
 		mux := http.NewServeMux()
 
-		routersList := make([]server.Router, 0)
+		routersList := make([]httpServer.Router, 0)
 
 		// file routers
-		htmlRouter := server.NewHTMLRouter()
+		htmlRouter := httpServer.NewHTMLRouter()
 		htmlRouter.Handler = middleware.Caching(htmlRouter.Handler)
 
-		cssRouter := server.NewCSSRouter()
+		cssRouter := httpServer.NewCSSRouter()
 		cssRouter.Handler = middleware.Caching(cssRouter.Handler)
 
-		imagesRouter := server.NewImagesRouter()
+		imagesRouter := httpServer.NewImagesRouter()
 		imagesRouter.Handler = middleware.Caching(imagesRouter.Handler)
 
 		// oauth routers
-		googleOAUTHRouter := server.NewGoogleOAUTHRouter()
+		googleOAUTHRouter := httpServer.NewGoogleOAUTHRouter()
 
 		// personal account routers
-		accountRouter := server.NewAccountRouter()
+		accountRouter := httpServer.NewAccountRouter()
 		accountRouter.Handler = middleware.Auth(accountRouter.Handler)
 
 		routersList = append(routersList, htmlRouter, cssRouter, imagesRouter, googleOAUTHRouter, accountRouter)
@@ -49,9 +49,9 @@ func (a *App) initRouter() http.Handler {
 	return a.router
 }
 
-func (a *App) InitServer() server.Server {
+func (a *App) InitServer() httpServer.Server {
 	if a.httpServer == nil {
-		a.httpServer = server.NewHTTPServer(a.router)
+		a.httpServer = httpServer.NewHTTPServer(a.router)
 	}
 
 	return a.httpServer
